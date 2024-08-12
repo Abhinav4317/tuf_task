@@ -25,27 +25,28 @@ app.use(
     origin: "https://tuf-task-sage.vercel.app",
   })
 );
+
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 let connection;
+
 async function initializeDatabase() {
   try {
-    connection = await mysql.createConnection({
-      host: process.env.DB_HOST,
-      port: process.env.DB_PORT || 3306,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_DATABASE,
-    });
+    connection = await mysql.createConnection(process.env.DB_CONNECTION_URL);
+
     console.log("Connected to MySQL.");
+
     await connection.query(
       `CREATE DATABASE IF NOT EXISTS ${process.env.DB_DATABASE}`
     );
     console.log("Database created or already exists");
+
     await connection.changeUser({ database: process.env.DB_DATABASE });
     console.log(`You have entered database: ${process.env.DB_DATABASE}`);
+
     await connection.query(createUsersTable);
     console.log("Users table created or already exists");
+
     await connection.query(createCardsTable);
     console.log("Cards table created or already exists");
   } catch (err) {
@@ -53,6 +54,7 @@ async function initializeDatabase() {
     throw err;
   }
 }
+
 function getUserDataFromToken(req) {
   return new Promise((resolve, reject) => {
     jwt.verify(
@@ -66,6 +68,7 @@ function getUserDataFromToken(req) {
     );
   });
 }
+
 initializeDatabase()
   .then(() => {
     app.post("/api/login", async (req, res) => {
@@ -91,11 +94,12 @@ initializeDatabase()
           sameSite: "none",
         });
 
-        res.status(200).json({ msg: "Successfully logged in!Welcome admin!" });
+        res.status(200).json({ msg: "Successfully logged in! Welcome admin!" });
       } catch (error) {
         res.status(500).json({ error: error.message });
       }
     });
+
     app.get("/api/profile", async (req, res) => {
       try {
         const token = req.cookies.token;
@@ -118,9 +122,11 @@ initializeDatabase()
         res.status(500).json({ error: error.message });
       }
     });
+
     app.post("/api/logout", (req, res) => {
       res.clearCookie("token").json(true);
     });
+
     app.post("/api/add-card", async (req, res) => {
       const user = await getUserDataFromToken(req);
       const { question, answer } = req.body;
@@ -135,6 +141,7 @@ initializeDatabase()
         res.status(500).json({ error: error.message });
       }
     });
+
     app.put("/api/edit-card", async (req, res) => {
       const user = await getUserDataFromToken(req);
       const { id, question, answer } = req.body;
@@ -149,6 +156,7 @@ initializeDatabase()
         res.status(500).json({ error: error.message });
       }
     });
+
     app.post("/api/delete-card", async (req, res) => {
       const user = await getUserDataFromToken(req);
       const { id } = req.body;
@@ -163,6 +171,7 @@ initializeDatabase()
         res.status(500).json({ error: error.message });
       }
     });
+
     app.get("/api/get-all-cards", async (req, res) => {
       try {
         const cards = await getAllCards(connection);
@@ -171,6 +180,7 @@ initializeDatabase()
         res.status(500).json({ error: error.message });
       }
     });
+
     app.get("/api/get-card-by-id/:id", async (req, res) => {
       const { id } = req.params;
       try {
