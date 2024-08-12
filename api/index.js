@@ -36,14 +36,6 @@ async function initializeDatabase() {
 
     console.log("Connected to MySQL.");
 
-    await connection.query(
-      `CREATE DATABASE IF NOT EXISTS ${process.env.DB_DATABASE}`
-    );
-    console.log("Database created or already exists");
-
-    await connection.changeUser({ database: process.env.DB_DATABASE });
-    console.log(`You have entered database: ${process.env.DB_DATABASE}`);
-
     await connection.query(createUsersTable);
     console.log("Users table created or already exists");
 
