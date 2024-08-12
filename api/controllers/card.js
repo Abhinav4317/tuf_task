@@ -33,6 +33,9 @@ async function deleteCard(connection, id) {
   }
 }
 async function getAllCards(connection) {
+  if (!connection) {
+    throw new Error("Database connection is not initialized.");
+  }
   const query = "SELECT * FROM cards_new";
   try {
     const [rows] = await connection.query(query);
