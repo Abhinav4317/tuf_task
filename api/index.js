@@ -22,7 +22,7 @@ app.use(cookieParser());
 app.use(
   cors({
     credentials: true,
-    origin: "http://localhost:5173",
+    origin: "https://tuf-task-sage.vercel.app",
   })
 );
 const PORT = process.env.PORT || 4000;
