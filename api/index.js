@@ -22,7 +22,7 @@ app.use(cookieParser());
 app.use(
   cors({
     credentials: true,
-    origin: "https://tuf-task-5rh73a112-abhinav-gangwars-projects.vercel.app",
+    origin: "https://tuf-task-sage.vercel.app",
   })
 );
 
